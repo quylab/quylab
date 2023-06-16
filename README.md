@@ -1,4 +1,4 @@
-Hello and Welcome to the codebase for my personal website: [http://www.quylab.com](http://www.quylab.com).
+Hello and Welcome! My name is Quy Fatouros and I invite you to view the codebase for my personal website: [http://www.quylab.com](http://www.quylab.com).
 
 ## Inside:
 
