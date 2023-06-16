@@ -2,15 +2,15 @@ Hello and Welcome to the codebase for my personal website: [http://www.quylab.co
 
 ## Inside:
 
-The main website is created using Next.JS with React.JS + TypeScript and modern HTML/CSS!
+The main website is created using NextJS with ReactJS + TypeScript, and modern HTML/CSS!
 
 For specific examples:
 
-React with TypeScript; please take a look at the "Four In A Row" project.
+React with TypeScript; please look at the "Four In A Row" project.
 
 Vanilla JavaScript with CSS; please take a look at the "Chess" project.
 
-PHP and Vanilla Javascript (incl. sophisticated algorithms); please take a look at "Bus Stops" (which includes SQL) and "Sudoku"
+PHP and Vanilla Javascript (incl. sophisticated algorithms); please take a look at "Bus Stops" (which includes SQL) and "Sudoku" projects.
 
 ## Questions
 
