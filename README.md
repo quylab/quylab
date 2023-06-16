@@ -10,7 +10,7 @@ React with TypeScript; please look at the "Four In A Row" project.
 
 Vanilla JavaScript with CSS; please take a look at the "Chess" project.
 
-PHP and Vanilla Javascript (incl. sophisticated algorithms); please take a look at "Bus Stops" (which includes SQL) and "Sudoku" projects.
+PHP and Vanilla Javascript (incl. sophisticated algorithms); please take a look at the "Bus Stops" (which includes SQL) and "Sudoku" projects.
 
 ## Questions
 
