@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<title>Quy Chess</title>
+<style>
+	#board{
+		position: absolute;
+		height: 482px;
+		width: 482px;
+		transform: rotate(180deg);
+		left: calc(50% - 241px);
+		top: calc(50% - 241px);
+	}
+	
+	.cell{
+		position: relative;
+		float: left;
+		height: 60px;
+		width:  60px;
+		font-size: 40px;
+		transform: rotate(180deg);
+	}
+	.cell.flip{ transform: rotate(0deg); }
+
+	.cell.b { color: #9A784F  ; }
+	.cell.w { color: lightblue; }
+	.cell.move          { background:    red  ; }
+	.cell.tomove        { background-color: yellow  ; }
+	.cell.blackground { background: black ; }
+	.cell.blackground { background: grey ; }
+	.cell.whiteground { background: white; }
+	
+	.cell.cell{
+		color: transparent;
+		background-image: url('pieces.png');
+		background-size: 600% 200%;
+		background-position: 120%;
+		background-repeat: no-repeat;
+	}
+
+	.cell.w      { background-position-y:   0% }
+	.cell.b      { background-position-y: 100% }
+
+	.cell.king   { background-position-x:   0% }
+	.cell.queen  { background-position-x:  20% }
+	.cell.bishop { background-position-x:  40% }
+	.cell.knight { background-position-x:  60% }
+	.cell.rook   { background-position-x:  80% }
+	.cell.pawn   { background-position-x: 100% }
+	
+	body, div{
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: -moz-none;
+		-ms-user-select: none;
+		-o-user-select: none;
+		user-select: none;
+	}
+	
+
+</style>
+<script src='diags.js' ></script>
+<script >
+
+var glob = {
+	    clicked    : undefined
+	  , to         : undefined
+	  , enpass     : undefined
+	  , whiteturn  : true
+	  , castle      : {
+			  wk: [false, [0, 7]]
+			, bk: [false, [56, 63]]
+		}
+	  , pawnPromo : false
+}
+
+function xor(a, b){
+		if(a){ return !b }
+		else return b
+}
+function last(x){ return x.slice(-1)[0] }
+function tail(xs){ return xs.slice(1) }
+function cl(...xs){ console.log(...xs) }
+function range(n){ return [...Array(n).keys()] }	
+function floor(x){ return Math.floor(x) }
+function head(x){ return x[0] }
+function docgetId(x)    { return document.getElementById(x)      }
+function mod(a, b){ return a%b 					   }
+function xytoi(x, y){ return x+8*y }
+function divi(div){ return Number(div.getAttribute('i')) }
+function innerTextEq(a){ return b => a===b.innerText } 
+function NOT(ev){ return v => !ev(v) } 
+
+// ----------
+function getPiece(domob){ return domob.innerText }
+function setPiece(domob, val){
+	if(typeof domob !== "object" || typeof val !== "string"){throw new Error('a')}
+	if(val===undefined){ throw new Error('setting to undefined')}
+	domob.innerText = val
+	var ob = {
+		 'R' : 'rook'
+		,'B' : 'bishop'
+		,'N' : 'knight'
+		,'K' : 'king'
+		,'Q' : 'queen'
+		,'P' : 'pawn'
+	}	
+	if(ob[val] === undefined){ return; throw new Error('val'+val)}
+	Object.values(ob).forEach(v => {
+		domob.classList.remove(v)
+	})
+	domob.classList.add(ob[val])
+}
+function clearPiece(domob){
+	"rook,bishop,knight,king,queen,pawn,w,b".split(',').map(x => domob.classList.remove(x))
+	domob.innerText = '' 
+}
+function all(f){ return xs => { return !xs.some(x => !f(x)) }}
+
+function squareit(x){
+	var width = Math.sqrt(x.length)
+	if( width !== floor(width) ){
+		throw new Error('squareit: argument received not a square')
+	}
+	var temp = []
+	while(x.length>0){
+		temp.push(x.slice(0, width))
+		x = x.slice(width)
+	}
+	return temp
+}
+
+function grabFromSqr(i, xstep=0, ystep=0, board){
+	var [x, y] = itoxy(i)
+	if(xstep===0 && ystep===0){ throw new Error('grabFromSqr: both steps are zero') }
+	var sqr = board
+	var ret = []
+	while( sqr[y+ystep]!==undefined && sqr[y+ystep][x+xstep]!==undefined ){
+		ret.push(sqr[y+ystep][x+xstep])
+		x += xstep
+		y += ystep
+	}
+	return ret
+}
+function allDiag(i, board){
+	var ret = [
+		  grabFromSqr(i,  1,  1, board)
+		, grabFromSqr(i,  1, -1, board)
+		, grabFromSqr(i, -1,  1, board)
+		, grabFromSqr(i, -1, -1, board)
+	]
+	return ret
+}
+function hozVert(i, board){
+	var ret = [
+		  grabFromSqr(i,  0,  1, board)
+		, grabFromSqr(i,  0, -1, board)
+		, grabFromSqr(i,  1,  0, board)
+		, grabFromSqr(i, -1,  0, board)
+	]
+	return ret
+}
+
+function itoxy(i) { 
+	if(typeof i !== 'number'){
+		throw new Error('itoxy: i is not an integer')
+	}
+	return [mod(i, 8), floor(i/8)] 
+}
+function copy8x8(squared){
+	var ret = []
+	squared.forEach(a => {
+		var temp = []
+		a.forEach(div => {
+			var d = div.cloneNode(true)
+			temp.push(d)
+		})
+		ret.push(temp)
+	})
+	return ret
+}
+
+window.addEventListener('DOMContentLoaded', _ => {
+	var makecell = (( function(){
+		var f = {}
+		return (blackp => {
+			if(f[Number(blackp)] !== undefined){
+				return f[Number(blackp)].cloneNode()
+			}
+			var n = document.createElement('div')
+			var backcol = blackp?'blackground':'whiteground'
+			n.classList.add('cell')
+			n.classList.add(backcol)
+			f[Number(blackp)] = n
+			return n
+	})})())
+	var board = document.createElement('div')
+	board.id = 'board'
+	
+	for(var i = 0; i<64; i++){
+		var even = i%2===0
+		var not  = Math.floor(i/8)%2===0
+		var final = xor(not, even)
+		var n = makecell(final)
+		n.addEventListener('click',  gridEvent)
+		n.setAttribute('i', i)
+		board.appendChild(n)
+	}
+	document.body.appendChild(board)
+
+	isUpper = function(x){ return String(x).toUpperCase()===x }
+
+	function loadintorow(r, units){
+		for(var i = 0; i<units.length; i++){
+			var man = board.children.item(i+r*8)
+			man.classList.add(isUpper(units[i])?'w':'b')
+			setPiece(man, units[i].toUpperCase())
+		}
+	}
+
+	function loadintorow2(r, units){
+		units.forEach(u => {
+			var [i, p] = u
+			var man = board.children.item(i+r*8)
+			man.classList.add(isUpper(p)?'w':'b')
+			setPiece(man, p.toUpperCase())
+		})
+	}
+	
+	loadintorow(0, "RNBKQBNR".split(''))
+	loadintorow(7, "rnbkqbnr".split(''))
+	loadintorow(1, "PPPPPPPP".split(''))
+	loadintorow(6, "pppppppp".split(''))
+	
+
+	function paintPossible(to, divboard, ispawn=false, promo=false){
+		if(promo===true){
+			var prom = arrayof(docgetId('promo').children)
+			prom.forEach(p => {
+				p.classList.add('move')
+			})
+			glob.pawnPromo = true
+			return;
+		}
+		if(to.length!==0){
+			if(typeof to[0][0] !== 'number'){
+				to = to.flat()
+			}else{
+				to = to.map(t => divboard[t[1]][t[0]])
+			}
+		}
+		var y = arrayof(docgetId('board').children).map((a, i) => [i, a])
+		var dec = (x) => y.filter(g => {
+			
+			var node = g[1]
+			var noMove = (yw) => yw.classList.value.split(' ').filter(q => q!=='move')
+			
+			var [classX, classNode] = [ noMove(x), noMove(node) ]
+			var arrEq = (a, b) => {
+				if(a.length!==b.length){ return false }
+				if(a.length===0){ return true }
+				if(head(a)!==head(b)){ return false }
+				return arrEq(tail(a), tail(b))
+			}
+			if(
+				   node.innerText!==x.innerText
+				|| divi(node)!==divi(x)
+				|| classX.length !== classNode.length
+				|| !arrEq(classX.sort(), classNode.sort())
+			){ return false }
+			return true
+		})[0][0]
+		to.forEach(t =>{
+			try{
+				var deced = dec(t)
+				divboard.flat()[deced].classList.remove('blackground')
+				divboard.flat()[deced].classList.remove('whiteground')
+				divboard.flat()[deced].classList.add('move')
+			}catch(err){
+				cl('')
+			}
+			
+		})
+		if(ispawn && glob.enpass!==undefined){
+			var  ans = Math.abs(divi(glob.enpass)-divi(glob.clicked))
+			var diff1 = ans === 1
+			if(!diff1){ return; }
+			var enpassi  = dec(glob.enpass) + (glob.whiteturn ? +8 : -8)
+			divboard.flat()[enpassi].classList.remove('blackground')
+			divboard.flat()[enpassi].classList.remove('whiteground')
+			divboard.flat()[enpassi].classList.add('move')
+		}
+	}
+	function countKings(b){
+		var count = 0
+		b.flat().forEach(elem => {
+			if(elem.classList.contains('king')){
+				count++
+			}
+		})
+		return count
+	}
+	
+	function maybeMove(i, uncopied, ispawn){
+		var myboard = copy64x1(uncopied)
+		
+		var iswhite = glob.clicked.classList.contains('w')
+		var piece = glob.clicked.innerHTML
+		if(myboard[i].classList.contains('move')){
+			
+			// CASTLING
+			if( piece==='K' && Math.abs(i-divi(glob.clicked)) === 2 ){
+				var arg = glob.castle[iswhite?'wk':'bk'][1] 
+				var [cx, cy] = itoxy(i)
+				var left = cx===1
+				var rookDiv = myboard[left?(iswhite?0:56):(iswhite?7:63)]
+				var withK = i + (left ? 1 : -1)
+				
+				clearPiece(rookDiv)
+				rookDiv.classList.remove(iswhite? 'b': 'w')
+				
+				setPiece(myboard[withK], 'R')
+				myboard[withK].classList.remove(iswhite? 'b': 'w')
+				myboard[withK].classList.add(iswhite? 'w': 'b')
+			}
+			if(glob.castle !== false){
+				if(piece==='K'){ // problem king castling into check 
+					if(iswhite){ glob.castle.wk = undefined
+					}else{       glob.castle.bk = undefined
+					}
+					if(glob.castle.wk===undefined && glob.castle.bk===undefined){
+						glob.castle = false
+					}
+				}
+				if(piece==='R'){
+					// removing castlable rooks
+					if(iswhite && glob.castle.wk!==undefined){
+						var thisI = divi(glob.clicked)
+						glob.castle.wk[1] = glob.castle.wk[1].filter(ei => ei!==thisI)
+						if(glob.castle.wk[1].length===0){
+							glob.castle.wk = undefined
+						}
+					}
+					if(!iswhite && glob.castle.bk!==undefined){
+						var thisI = divi(glob.clicked)
+						glob.castle.bk[1] = glob.castle.bk[1].filter(ei => ei!==thisI)
+						if(glob.castle.bk[1].length===0){
+							glob.castle.bk = undefined
+						}
+					}
+					if(glob.castle.wk===undefined && glob.castle.bk===undefined){
+						glob.castle = false
+					}
+				}
+			}
+			// end castling.
+			// ENPASS
+			var iEnpass = glob.enpass!==undefined ? divi(glob.enpass) : false
+			glob.enpass = undefined 
+			if(ispawn){ // enpassant
+				var iClick = divi(glob.clicked)
+				if(Math.abs(i-iClick)>9){ // moved two spaces
+					glob.enpass = myboard[i]
+				}else{	
+					var eval = Math.abs(i-iEnpass) === 8 
+					if(eval){
+						clearPiece(myboard[iEnpass])
+						myboard[iEnpass].classList.remove(iswhite? 'b': 'w')
+					}
+				}
+			}
+			// enpass end. 
+			setPiece(myboard[i], piece)
+			myboard[i].classList.remove(iswhite? 'b': 'w')
+			myboard[i].classList.add(iswhite? 'w': 'b')
+			myboard[divi(glob.clicked)].classList.remove((iswhite?'w':'b'))
+			clearPiece(myboard[divi(glob.clicked)])
+			
+			var squared       = squareit(myboard)
+			var kingI         = divi(myKingAtPos(glob.whiteturn, squared))
+			var kingCanGo     = chompKing(kingI, squared)
+			var myKingInCheck = kingCheck(kingI, squared)
+			if(!myKingInCheck){
+				// commit
+				glob.whiteturn = !glob.whiteturn
+				rotateBoard(myboard)
+				docgetId('board').style.transform  = 'rotate('+(glob.whiteturn?180:0)+'deg)' 
+				return myboard
+			}else{
+				return false
+			}
+		}
+		return false
+	}
+
+	function moveorcancel(i, myboard, ispawn=false){
+		removePromo()
+		var ans = maybeMove(i, myboard, ispawn)
+		myboard  = ans || myboard
+		docgetId('board').innerHTML = ''
+		for(var j = 0; j<64; j++){
+			docgetId('board').appendChild(myboard[j])
+			var even = j%2===0
+			var not  = Math.floor(j/8)%2===0
+			var fincol = !xor(not, even)?'whiteground':'blackground'
+			myboard[j].classList.remove('move')
+			myboard[j].classList.remove('whiteground')
+			myboard[j].classList.remove('blackground')
+			myboard[j].classList.add(fincol)
+		}	
+	}
+	
+	function colCanMove(col, board){
+		var clsCol = col?'w':'b'
+		for(var i = 0; i<board.length; i++){
+			for(var j = 0; j<board[i].length; j++){
+				// if col's piece can move return true
+				if(board[i][j].classList.contains(clsCol)){
+					var piece = getPiece(board[i][j])
+					var func = getmovesof(piece)
+					if(func(divi(board[i][j]), board, true).flat().length>0){
+						return true
+					}
+				}
+			}
+		}
+		return false
+	}
+	
+	function getmovesof(piece){
+			return { 'R': chompRook
+			, 'N': chompKnight
+			, 'B': chompBishop
+			, 'K': chompKing
+			, 'Q': chompQueen
+			, 'P': chompPawn
+			}[piece.toUpperCase()]
+	}
+	
+	function copy64x1(board64){
+		var ret = []
+		board64.forEach(div => {
+			var d = div.cloneNode(true)
+			d.addEventListener('click', gridEvent)
+			ret.push(d)
+		})
+		return ret
+	}
+	
+	function gridEvent(e){
+		e.preventDefault()
+		var myboard = arrayof(e.target.parentNode.children)
+		var squared = squareit(myboard)
+		var p = myboard.map((c, i) => [i,c]).filter(c => c[1]===e.target)[0][0]	
+		if(glob.clicked===undefined)
+		{			
+			if(innerTextEq('')(e.target.innerHTML)){ return; }			
+			if(glob.whiteturn !== !e.target.classList.contains('b')){ return; }
+			glob.clicked = e.target
+			arrayof(docgetId('board').children)[divi(e.target)].style.backgroundColor = 'yellow'
+			// check and stalemate:
+			var kingI         = divi(myKingAtPos(glob.whiteturn, squared))
+			var kingCanGo     = chompKing(kingI, squared)
+			var myKingInCheck = kingCheck(kingI, squared)			
+			var noPieceCanMove 
+				= !colCanMove(glob.clicked.classList.contains('w'), squared)
+				
+			if( kingCanGo.length===0 && noPieceCanMove){
+				if(myKingInCheck){
+					throw new Error('CHECKMATE: ' 
+					+ (glob.whiteturn?'BLACK': 'WHITE') + ' WINS')
+				}
+				throw new Error('STALEMATE: ' 
+					+ (glob.whiteturn?'WHITE': 'BLACK') + ' CANNOT MAKE ANY LEGAL MOVE')
+			}
+			
+			var piece = getPiece(e.target)
+			var me	 = getPiece(e.target)
+			var movs = zip('RNBKQP'.split(''), [chompRook, chompKnight, chompBishop, chompKing, chompQueen, chompPawn])
+			var mymov = movs.filter(m => me.toUpperCase()===m[0]).flat()
+			var [dump, func] = mymov
+
+			var jop = squared
+			var to   = func(p, jop, true)
+			if(piece==='P'){
+				// pawn promo
+				if(to[0]===true){
+					paintPossible(tail(to), jop, true, true)
+				}else{
+					paintPossible(tail(to), jop, true)
+				}
+			}else{
+				paintPossible(to, jop, false)
+			}
+		}
+		else
+		{
+			moveorcancel(myboard.indexOf(e.target), myboard, innerTextEq('P')(glob.clicked))
+			arrayof(docgetId('board').children)[divi(glob.clicked)].style.backgroundColor = ''
+			glob.clicked = undefined
+		}
+	}
+
+	function removePromo(){
+		if(docgetId('promo')!==null){ docgetId('promo').remove() }
+	}
+	
+	function rotateBoard(mb=undefined){
+		var board = document.getElementById('board')
+		var runthrough = mb ?? arrayof(document.getElementsByClassName('cell'))
+		runthrough.forEach(c => {
+			if(c.classList.contains('flip')){
+				c.classList.remove('flip')
+			}else{
+				c.classList.add('flip')
+			}
+		})
+	}
+	
+	function promoEvent(e){
+		setPiece(glob.clicked, getPiece(e.target))
+		glob.whiteturn = !glob.whiteturn
+		rotateBoard()
+		docgetId('board').style.transform  = 'rotate('+(glob.whiteturn?180:0)+'deg)' 
+		removePromo()
+	}
+
+	function iswhite(piece){
+		if(piece.classList.contains('w')){ return true  }
+		if(piece.classList.contains('b')){ return false }
+		return -1
+	}
+	
+	function eligible(i, board, boardarr){
+		var [x, y] = itoxy(i)
+		var im = iswhite(board[y][x])
+		return boardarr.map( b => {
+			return b.reduce((a, x) => {
+				if(a[0]){ return a }
+				var t = iswhite(x)
+				if(im===t){
+					return [true, a[1]]
+				}else{
+					return [t!==-1, a[1].concat(x)]
+				}
+			}, [false, []])[1]
+		})
+	}
+	
+	function knightMan(i, board){
+		var [ox, oy] = itoxy(i)
+		var pos = [
+			  [ 2,  1]
+			, [ 2, -1]
+			, [-2,  1]
+			, [-2, -1]
+		]
+		pos = [].concat(pos, pos.map(t => t.slice(0).reverse()))
+		var ret = pos.map(p => {
+			var [x, y] = p
+			if(board[oy+y]===undefined){ return undefined }
+			if(board[oy+y][ox+x]===undefined){ return undefined }
+			return board[oy+y][ox+x]
+		}).filter(fin => fin!==undefined)
+		var m = ret.map(r => [r])
+		return m
+	}
+	
+	function queen(i, board){
+		var altogether = [].concat(eligible(i, board, hozVert(i, board)), eligible(i, board, allDiag(i, board)))
+		return altogether
+	}
+	
+	function chompBishop(i, board, actualMove=false){
+		var ret = eligible(i, board, allDiag(i, board))
+		return filterSafe(i, actualMove, board, ret)
+	}
+	function chompRook(i, board, actualMove=false){
+		var ret = eligible(i, board, hozVert(i, board))
+		return filterSafe(i, actualMove, board, ret)
+	}
+	function chompKnight(i, board, actualMove=false){
+		var m =  knightMan(i, board)
+		var g = eligible(i, board, m)
+		var ret = g.filter(a => a.length>0)
+		return filterSafe(i, actualMove, board, ret)
+	}
+	
+	function filterSafe(i, torun, board, res){
+		var [x, y] = itoxy(i)
+		if(torun){
+			var resmap =  res.map(a =>{
+				// make sure king is not in check from moves
+				if(a.length===0){ return a }
+				return takeUntilCheck(divi(board[y][x]), a, board)
+			})
+			return resmap
+		}
+		return res
+	}
+	
+	function takeUntilCheck(i, a, board){
+		var ret = []
+		var [x, y] = itoxy(i)
+		for(var i = 0; i<a.length; i++){
+			// if in check return ret else push
+			if(!safeMove(divi(board[y][x]), divi(a[i]), board)){
+				continue;
+			}
+			ret.push(a[i])
+		}
+		return ret
+	}
+	
+	function safeMove(i, toi, uncopied){
+		var board = copy8x8(uncopied)
+		var [x, y, tx, ty] = [].concat(itoxy(i), itoxy(toi))
+		var amwhite = iswhite(board[y][x])
+		if(amwhite===-1){ throw new Error('safeMove: position is neither black or white') }
+		
+		var ami   = board[y][x]
+		var todiv = board[ty][tx]		
+		setPiece(todiv, getPiece(ami))
+		clearPiece(ami)
+		todiv.classList.add(glob.whiteturn?'w':'b')
+		ami.classList.remove(glob.whiteturn?'w':'b')
+		todiv.classList.remove(!glob.whiteturn?'w':'b')
+		
+		var kingI         = divi(myKingAtPos(glob.whiteturn, board))
+		var kingCanGo     = chompKing(kingI, board)
+		return !kingCheck(kingI, board) // to check if pinned in that direction	
+	}
+	
+	function chompQueen(i, board, actualMove=false){
+		var ret = queen(i, board)
+		return filterSafe(i, actualMove, board, ret)
+	}
+	
+	function allDiag2(i, board){
+		return eligible(i, board, allDiag(i, board))
+	}
+	
+	function hozVert2(i, board){
+		return eligible(i, board, hozVert(i, board))
+	}
+	function kingCheck(i, board){
+		var assoom = [
+		      ['BQ',    allDiag2(i, board)]
+		    , ['RQ',    hozVert2(i, board)]
+			, ['N' , chompKnight(i, board)]
+			
+		]
+		var noPawnKing = assoom.reduce((a, x) => {
+			if(a===true){ return a }
+			var tu = x[0].split('')
+			var alllasts = x[1].reduce((w, e) => {
+				return w.concat(last(e))
+			}, []).filter(a => a!==undefined)
+			return (
+				  ( tu.length===1 && alllasts.some(innerTextEq('N')))
+				||( tu.some(a => alllasts.some(innerTextEq(a)))      )
+			)
+		}, false)
+		if(noPawnKing){ return true }
+		var [x, y]  = itoxy(i)
+		var kingwhite = iswhite(board[y][x])
+		if(kingwhite===-1){ throw new Error('kingCheck: we received a -1 for thingo') }
+		var jump = kingwhite ? 0+1 : 0-1
+		var twos   = [[x+1, y+jump], [x-1, y+jump]]
+		var cond = myt => innerTextEq('P')(myt) && iswhite(myt)===!kingwhite
+		var bound = (t) => (t>-1 && t<8)
+			
+		// finally check if a pawn is checking the king and return 
+		var b1 = twos.some(t =>  bound(t[0]) && bound(t[1]) && cond(board[t[1]][t[0]]))
+		var b2 = kingDirs(i, board).flat().map(k => k.innerText).some(a => a==='K')
+		return b1 || b2
+	}
+	
+	function kingDirs(i, board){ 
+		var ret = chompQueen(i, board).map(a => a.slice(0, 1) )
+		return ret
+	}
+
+	function kingCastling(i, board){ 
+		var ret  = [] 
+		var [x, y] = itoxy(i)
+		var amwhite = iswhite(board[y][x])
+		if(glob.castle !== false){
+			var row = board[(amwhite ? 0 : 7)]
+			var [l, r] = [ row.slice(1, x), row.slice(x+1, -1) ]
+			var [canleft, canright] = [
+				  !l.some(NOT(innerTextEq('')))
+				, !r.some(NOT(innerTextEq('')))
+			]
+			var op = (num, col='w') => {
+				if(getPiece(board[y][num])!==''){ return false }
+				setPiece(board[y][num], 'K')
+				board[y][num].classList.add(col)
+				var notincheck = !kingCheck(xytoi(num, y), board)
+				clearPiece(board[y][num])
+				board[y][num].classList.remove(col)
+				return notincheck
+			}
+			if( amwhite && glob.castle.wk !== undefined){
+				// check if array between king and R is clear
+				var eval1 = op(x-1)
+				var eval2 = op(x+1)
+				if(canleft  && glob.castle.wk[1].some(c => c===0) 
+					&& eval1 ){
+					ret.push(board[y][x-2])
+				}
+				if(canright && glob.castle.wk[1].some(c => c===7)
+					&& eval2 ){ 
+					ret.push(board[y][x+2]) 
+				}
+			}
+			if(!amwhite && glob.castle.bk !== undefined){
+				var eval1 = op(x-1, 'b')
+				var eval2 = op(x+1, 'b')
+				if(canleft  && glob.castle.bk[1].some(c => c===56) && eval1){ 
+					ret.push(board[y][x-2]) 
+				}
+				if(canright && glob.castle.bk[1].some(c => c===63) && eval2){ 
+					ret.push(board[y][x+2]) 
+				}
+			}
+		}
+		return ret
+	}
+	
+	function myKingAtPos(amwhite, board){
+		if(amwhite===-1){ throw new Error('myKingAtPos: amwhite is not boolean') }
+		var eval = amwhite ? 'w' : 'b'
+		var fillt = board.flat().filter(a => {
+			return (getPiece(a)==='K' && a.classList.contains(eval))
+		})
+		return fillt[0] ?? (() => {throw new Error('myKingAtPos: return undefined)')})()
+	}
+	
+	function chompKing(i, board){
+		var [x, y] = itoxy(i)
+		var amwhite = iswhite(board[y][x])
+		board = copy8x8(board)
+		var kC = kingCastling(i, board)
+		var everydir = kingDirs(i, board).concat(kC.map(c => [c]))
+		return everydir.flat().filter((isCheck, i) => {
+			// move king to that position and check if its in check, 
+				// if it is  return false
+				// else return true 
+				
+				var myi = divi(isCheck)
+				var [xc, yc] = itoxy(myi)
+				var colcls  = amwhite ? 'w' : 'b'
+				
+				if(amwhite===-1){ throw new Error('chompKING: amwhite is -1') }
+				var colcls2 = !amwhite ? 'w' : 'b'
+
+				clearPiece(board[y][x])
+				board[y][x].classList.remove(colcls)
+				var originalP = getPiece(board[yc][xc])
+				setPiece(board[yc][xc], 'K')
+				board[yc][xc].classList.add(colcls);
+				board[yc][xc].classList.remove(colcls2);
+
+				var ret = kingCheck(myi, board);
+				setPiece(board[y][x], 'K')
+				board[y][x].classList.add(colcls)
+				setPiece(board[yc][xc], originalP)
+				board[yc][xc].classList.remove(colcls)
+				board[yc][xc].classList.remove('king')
+				if(originalP!==''){
+					board[yc][xc].classList.add(colcls2)
+				}
+				return !ret
+		})
+	}
+	
+	function genRNBQ(x, y){
+		var cover = document.createElement('div')
+		cover.id = 'promo'
+		cover.style.height = '62px'
+		cover.style.width = '242px'
+		cover.style.border = '1px solid blue'
+		var gencell = (piece) => {
+			var c = document.createElement('div')
+			c.classList.add('cell')
+			c.classList.add(glob.whiteturn?'w':'b')
+			setPiece(c, piece)
+			c.addEventListener('click', promoEvent)
+			return c
+		}
+		'RBNQ'.split('').forEach(c => {
+			cover.appendChild(gencell(c))
+		})
+		document.body.appendChild(cover)
+		return [[x, y]]
+	}
+	
+	function eligiblePawn(i, assert, board){
+		var [ox, oy] = itoxy(i)
+		var qwhite = board[oy][ox].classList.contains('w')
+		var qblack = board[oy][ox].classList.contains('b')
+		//early return for promotion
+		try{
+			var [tx, ty] = assert[0]
+			if((ty===8 || ty===-1) && tx>0 && tx<8 ){
+				return [true, genRNBQ(tx, ty)]
+			}else{
+				throw ''
+			}
+		}catch(err){
+			cl(err)
+		}
+		assert = assert.map(a => { 
+			var [x, y] = a
+			return (x<0 || x>7 || y<0 || y>7) ? false : a
+		})
+		var m2;
+		if(assert.length===4){
+			var [l, m, m2, r] = assert
+		}else{
+			var [l, m, r] = assert
+		}
+		m = m===false || getPiece(board[m[1]][m[0]])!=='' ? false : m
+		if(m2!==undefined){
+			m2 = m2===false || getPiece(board[m2[1]][m2[0]])!=='' || m===false ? false : m2
+		}
+		[l, r] = [l, r].map(b => {
+			if(b===false){ return false }
+			var [x, y] = b
+			var iw = board[y][x].classList.contains('w')
+			var ib = board[y][x].classList.contains('b')
+			if(board[y][x]===''){ return false }	
+			if((qwhite && !ib) || (qblack && !iw)){ return false }
+			return b
+		})
+		return [].concat( false, (m2===undefined?[l, m, r]:[l, m, m2, r]).filter(arr => arr!==false))
+	}
+	
+	function chompPawn(i, board, actualMove=false){
+		var [x, y] = itoxy(i)
+		var qwhite = board[y][x].classList.contains('w')
+		var jump  = qwhite ? 1 : -1
+		var b4 = ( (floor(i/8)===1 || floor(i/8)===6)  
+			? [[x, y+jump], [x, y+jump*2]]
+			: [[x, y+jump]               ]
+		)
+		var [ l,  r] = b4[0]
+		var [s1, s2]   = [[l-1, r], [l+1, r]]
+		var ret = eligiblePawn(i, [].concat([s1], b4, [s2]), board)
+		if(ret[0]===true){
+			return ret
+		}
+		if( ![true, false].some(b => b===ret[0]) ){ throw 'pawn promo failed' }
+		var pass = tail(ret).map(r => [board[r[1]][r[0]]] )		
+		return [].concat(false, filterSafe(i, actualMove, board, pass))
+	}
+})
+</script>
+	</head>
+	<body>
+
+	</body>
+</html>
