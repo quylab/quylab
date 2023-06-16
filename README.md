@@ -8,8 +8,7 @@ For specific examples:
 
 React with TypeScript; please look at the "Four In A Row" project 'quylab/src/app/projects/fourinarow'.
 
-JavaScript and CSS; please look at the "Chess" project 'quylab/projects
-/chess'.
+JavaScript and CSS; please look at the "Chess" project 'quylab/projects/chess'.
 
 PHP and JavaScript (incl. sophisticated algorithms); please look at the "Bus Stops" (which includes SQL) and the "Sudoku" projects.
 
