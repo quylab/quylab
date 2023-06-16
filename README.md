@@ -8,9 +8,9 @@ For specific examples:
 
 React with TypeScript; please look at the "Four In A Row" project.
 
-Vanilla JavaScript with CSS; please take a look at the "Chess" project.
+Vanilla JavaScript with CSS; please look at the "Chess" project.
 
-PHP and Vanilla Javascript (incl. sophisticated algorithms); please look at the "Bus Stops" (which includes SQL) and "Sudoku" projects.
+PHP and Vanilla JavaScript (incl. sophisticated algorithms); please look at the "Bus Stops" (which includes SQL) and the "Sudoku" projects.
 
 ## Questions
 
