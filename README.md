@@ -1,4 +1,4 @@
-Hello and Welcome to the codebase for my personal website: [http://www.quylab.com](http://www.quylab.com)
+Hello and Welcome to the codebase for my personal website: [http://www.quylab.com](http://www.quylab.com).
 
 ## Inside:
 
@@ -14,4 +14,4 @@ PHP and Vanilla JavaScript (incl. sophisticated algorithms); please look at the 
 
 ## Questions
 
-If you have any queries, please email me on: [principal@quylab.com](mailto:principal@quylab.com)
+If you have any queries, please email me on: [principal@quylab.com](mailto:principal@quylab.com).
