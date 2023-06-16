@@ -6,9 +6,9 @@ The main website is created using NextJS involving ReactJS + TypeScript, and mod
 
 For specific examples:
 
-React with TypeScript; please look at the "Four In A Row" project '/src/app/projects/fourinarow'.
+React with TypeScript; please look at the "Four In A Row" project 'quylab/src/app/projects/fourinarow'.
 
-Vanilla JavaScript with CSS; please look at the "Chess" project.
+JavaScript and CSS; please look at the "Chess" project.
 
 PHP and JavaScript (incl. sophisticated algorithms); please look at the "Bus Stops" (which includes SQL) and the "Sudoku" projects.
 
