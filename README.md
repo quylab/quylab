@@ -12,6 +12,6 @@ Vanilla JavaScript with CSS; please look at the "Chess" project.
 
 PHP and JavaScript (incl. sophisticated algorithms); please look at the "Bus Stops" (which includes SQL) and the "Sudoku" projects.
 
-## Questions
+## Questions:
 
 If you have any queries, please email me on: [principal@quylab.com](mailto:principal@quylab.com).
