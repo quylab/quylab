@@ -4,57 +4,15 @@
 //import React, { useEffect } from 'react';
 //function setTitle(){ useEffect(() => { document.title = document.title+' | Resume'; }, []); } // {setTitle()}
 
-/*
-
-//// <div class="cell small-12 large-12 ">
-			<div class="cell small-12 large-12">
-				<div class="smt details">
-					2202/108 Albert St, Brisbane City, QLD 4000 <br> 0421 203 238 <br> principal@quylab.com
-				</div>
-			</div>		
-		</div>
-/////
-
-<div class="res_title">Referees</div>
-			<div class="referees">
-				<div class="smt">
-					<div class="refname"><strong>Matthew Lord</strong></div>
-					<div class="refquote">
-						<ul>
-							<li>Lead Web Developer</li>
-							<li>Maxo Telecommunications Pty. Ltd.</li>
-							<li style="margin-top: 0.1em">07 3123 5302</li>
-							<li>matthew@maxo.com.au</li>
-						</ul>
-					</div>
-				</div>
-				<div class="smt">
-					<div class="refname"><strong>N Chan</strong></div>
-					<div class="refquote">
-						<!-- "A stellar contributor, motivated and learns fast"
-						<br>Head of Platform
-						<br>Nascordia Pty. Ltd.
-						<br>0466 551 287 -->
-						<ul>
-							<li>Head of Platform</li>
-							<li>Nascordia Pty. Ltd.</li>
-							<li style="margin-top:0.2em">0466 551 287 </li>
-						</ul>
-					</div>
-				</div>
-			</div>
-
-
-*/
 
 export default function Page(){
 	return (<>
 	<div className="grid-x grid-padding-x grid-container fluid" id="resume">
 		<div className="cell small-12 large-8 large-offset-2">
 			<div className="heading_projects">
-				<div className="outerbracket"><div></div></div>
+			{/* <div className="outerbracket"><div></div></div> */ }
 				<h2>Resume</h2>
-				<div className="outerbracket rotate180"><div></div></div>
+				{/* <div className="outerbracket rotate180"><div></div></div> */} 
 			</div>
 		</div>
 		

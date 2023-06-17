@@ -1,7 +1,7 @@
 
 html { overflow: hidden; }
 
-body{ box-sizing: border-box; background: white; color: black; margin:0 auto; width: 100%; }
+body{ font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif !important;  box-sizing: border-box; background: white; color: black; margin:0 auto; width: 100%; }
 
 nav{ max-width: 1000px; margin: 0 auto;} 
 
@@ -101,9 +101,11 @@ background-color: black;
 .mobilehide{ display: none; }
 .githubbanner.mobileshow{
 	display: block;
-	position: relative;
-	width: 100%;
-	border-radius: 15px;
+    position: relative;
+    width: fit-content;
+    border-radius: 15px;
+    padding: 0 30px;
+	float: right;
 }
 }
 
@@ -244,7 +246,6 @@ background-position: 57% 96%;
 	text-align: center;
 	color: white !important;
 	font-size: 2em;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
 }
 .qrd2{
 	display: inline-block;
@@ -255,7 +256,6 @@ background-position: 57% 96%;
 	margin-right: 0;
 	width: 100%;
 	font-size: 1.5em;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
 	border: 2.5px solid orange;
 	border-radius: 0.8em;
 	padding: 0.6em 2.4em;
@@ -347,11 +347,11 @@ plaintext.mybold{
 	background: white; 
 }
 
-@media (max-width: 300px){
-	#projects h2, #projects .projtitle{
-		font-size: 2em;
-	}
-}
+/* @media (max-width: 300px){ */
+	/* #projects h2, #projects .projtitle{ */
+		/* font-size: 2em; */
+	/* } */
+/* } */
 
 @media (max-width: 260px){
 	.recol img {
@@ -444,8 +444,13 @@ a:active .viewmore{ box-shadow: 1px 1px 2px 1px black; }
 	/* background: #fcfcfe; */
 	padding: 1em;
 	padding-top: 0em;
-	text-align: center
+	text-align: center;
 }
+
+.cell.medium-6{
+	margin-bottom: 2em; 
+}
+
 .recol > a {
 	display: inline-block;
 } 
@@ -553,7 +558,6 @@ a:active .viewmore{ box-shadow: 1px 1px 2px 1px black; }
 	text-align: center;
 	font-size: 3em;
 	display: inline-block;
-	font-family: Palatino,Palatino Linotype,Palatino LT STD,Book Antiqua,Georgia,serif;
 	margin: 0;
 	width: 100%;
 	padding: 0;

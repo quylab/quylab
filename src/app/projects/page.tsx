@@ -10,14 +10,14 @@ export default function Projects(){
 	<div className="grid-x grid-padding-x grid-container" id="projects">
 		<div className="cell small-12 large-8 large-offset-2">
 			<div className="heading_projects">
-				<div className="outerbracket"><div></div></div>
-				<h2>My Projects</h2>
-				<div className="outerbracket rotate180"><div></div></div>
-				{/* <div className="githubbanner mobilehide"><a href="https://github.com/quy-world" target="_blank">github.com/quy-world</a> </div> */}
+			{/* <div className="outerbracket"><div></div></div> */}
+				<h2>Projects</h2>
+				{/* <div className="outerbracket rotate180"><div></div></div> */}
+				<div className="githubbanner mobilehide"><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div>
 			</div>
-			{/* <div>
-				<div className="githubbanner mobileshow"><a href="https://github.com/quy-world" target="_blank">github.com/quy-world</a> </div>
-			</div> */}
+			<div>
+				<div className="githubbanner mobileshow"><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div>
+			</div>
 		</div>
 		
 		<div className="cell small-12 projtitle">Four In A Row</div>

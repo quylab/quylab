@@ -18,7 +18,6 @@ function MenuItems(){
 		<li><a href="/resume">Resume</a></li>
 		<li><a href="/projects">Projects</a></li>
 		{/* <li><a href="/blog">Blog</a></li> */ }
-		<li><a href="/projects/planogram">PLANOGRAM</a></li>
 		<li><a href="/contact">Contact</a></li>
 	</>)
 }
