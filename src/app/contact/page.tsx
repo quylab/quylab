@@ -7,9 +7,9 @@ export default function Page(){
 			</div>
 			<div className="cell medium-6 centerhead large-5 contactparagraphs">
 				<div>
-					<div>Thank you for visiting my website.</div>
+					<div>Thank you for visiting my website</div>
 					<div>
-						For work related enquiries please email me on:&nbsp;
+						<div>Have any enquiries? Please email:&nbsp;</div>
 						<a href="mailto:principal@quylab.com">principal@quylab.com</a>
 					</div>
 				</div>

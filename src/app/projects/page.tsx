@@ -21,14 +21,14 @@ export default function Projects(){
 		</div>
 		
 		<div className="cell small-12 projtitle">Four In A Row</div>
-		<div className="cell medium-6 recol" >
+		<div className="cell medium-6 projectsmargin recol" >
 		<a href="/projects/fourinarow.html" target="_blank">
 			<img src={fourinarow.src} alt="fourinarow" className="proj_fourinarow"/>
 			<div className="viewmore">View Project!</div>	
 		</a> 
 		
 		</div>
-		<div className="cell medium-6 large-5 fourinarowinfo">
+		<div className="cell medium-6 projectsmargin large-5 fourinarowinfo">
 			
 			<div className="projinfo"> 
 				A fully functional multi-player online Four In A Row game, made in ReactJS with TypeScript. Wins, draws and mobile-view support in under 1k lines.
@@ -71,7 +71,7 @@ export default function Projects(){
 		
 		
 		<div className="cell small-12 projtitle">Bus Stops</div>
-		<div className="cell medium-6 large-5">
+		<div className="cell medium-6 projectsmargin large-5">
 			<div className="projinfo"> 
 				<strong>A bus network simulation engine.</strong> Performed in JavaScript, Custom CSS sprites and manipulation. Each passenger implements agent-based reasoning and calculates their preferred route to their destination from their understanding of the current bus network.
 				
@@ -91,7 +91,7 @@ export default function Projects(){
 			</div>
 		</div>
 		
-		<div className="cell medium-6 recol" >
+		<div className="cell medium-6 projectsmargin recol" >
 		<a href="/busstops/index.php" target="_blank">
 				<img src={busstops.src} alt="busstops" className="proj_chess" />
 				<div className="viewmore">View Project!</div>

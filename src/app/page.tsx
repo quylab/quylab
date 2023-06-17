@@ -7,9 +7,9 @@ export default function Page() {
 			</div>
 			<div className="cell medium-6 centerhead large-5">
 				<div className="typewriter-wrapper"> 
-						<p className="typewriter a">Hello. </p>
-						<p className="typewriter b"><span>My name is&nbsp;<b>Quy Fatouros</b>,</span></p>
-						<p className="typewriter c"><span>and I build web applications.</span></p>
+						<p className="typewriter a">Hello </p>
+						<p className="typewriter b"><span>My name is&nbsp;<b>Quy Fatouros</b></span></p>
+						<p className="typewriter c"><span>and I build web applications</span></p>
 				</div>
 			</div>
 	</div>
