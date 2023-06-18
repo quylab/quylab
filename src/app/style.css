@@ -97,19 +97,18 @@ background-color: black;
 }
 }
 
-@media (max-width: 300px){
-.mobilehide{ display: none; }
-.githubbanner.mobileshow{
-	display: block;
-    position: relative;
-    width: fit-content;
-    border-radius: 15px;
-    padding: 0 30px;
-	float: right;
-}
-}
-
-.mobileshow{ display: none; }
+/* @media (max-width: 300px){ */
+	/* .mobilehide{ display: none; } */
+	/* .githubbanner.mobileshow{ */
+		/* display: block; */
+		/* position: relative; */
+		/* width: fit-content; */
+		/* border-radius: 15px; */
+		/* padding: 0 30px; */
+		/* float: right; */
+	/* } */
+/* } */
+/* .mobileshow{ display: none; } */
 
 .title-bar{
 background: black;
@@ -192,17 +191,31 @@ min-height: 600px;
 }
 
 
+
 @media (max-width: 730px){
-.medium-6.centerhead{ 
+.medium-6.centerhead,
+.medium-7.centerhead{ 
 	width: 80%;
 }
 }
 @media (max-width: 640px){
-.medium-6.centerhead{ 
-	width: 100%;
-}
+	.medium-6.centerhead,
+	.medium-7.centerhead{ 
+		width: 100%;
+	}
 }
 .centerhead{ margin:auto; }
+
+@media (max-width: 26em){
+	.contactparagraphs > div > div{
+		font-size: 1.2rem !important;
+	}
+}
+@media (max-width: 22.5em){
+	.contactparagraphs > div > div{
+		font-size: 1rem !important;
+	}
+}
 
 .myhead{
 width: var(--headpx);
@@ -295,8 +308,14 @@ background-position: 57% 96%;
 
 #contactpage{ min-height: 400px; display: flex; justify-content: center; align-items: center; }
 
-/* .contactparagraphs > div { max-width: 350px; } */
-.contactparagraphs > div > div{ margin: 1em 0; font-size: 1.2em; }
+.contactparagraphs > div { width: fit-content; margin: auto; }
+.contactparagraphs > div > div{ margin: 1em 0; font-size: 1.4rem; }
+
+@media (max-width: 720px){
+	.contactparagraphs{
+		font-size: 0.8rem;
+	}
+}
 
 .contactparagraphs > div > div > a {color: #1a0dab}
 
@@ -398,6 +417,11 @@ a.smallproj > img{
 	h2, .h2 {
 		font-size: 2.5rem;
 		line-height: revert;
+	}
+	#contactpage{
+		justify-content: space-evenly;
+		flex-direction: column;
+		font-size: 0.8rem;
 	}
 }
 

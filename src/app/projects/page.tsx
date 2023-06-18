@@ -13,10 +13,11 @@ export default function Projects(){
 			{/* <div className="outerbracket"><div></div></div> */}
 				<h2>Projects</h2>
 				{/* <div className="outerbracket rotate180"><div></div></div> */}
-				<div className="githubbanner mobilehide"><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div>
+								{/* mobilehide*/}
+				<div className="githubbanner" ><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div>
 			</div>
 			<div>
-				<div className="githubbanner mobileshow"><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div>
+			{/* <div className="githubbanner mobileshow"><a href="https://github.com/quylab" target="_blank">github.com/quylab</a> </div> */}
 			</div>
 		</div>
 		
