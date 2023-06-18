@@ -51,7 +51,7 @@
 <html lang="en-us">
 	<head>
 		<meta charset="utf-8">
-		<title>Bus stops</title>
+		<title>Bus Stops</title>
 		<link href="./css/all.min.css" rel="stylesheet">
 		<script src="_functionalhelpers.js"></script>
 		<script defer>

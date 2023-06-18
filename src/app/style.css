@@ -306,7 +306,10 @@ background-position: 57% 96%;
 	/* border-radius: 50%; */
 /* } */
 
-#contactpage{ min-height: 400px; display: flex; justify-content: center; align-items: center; }
+#contactpage{ 
+	/* min-height: 400px; */
+	min-height: 600px;
+	display: flex; justify-content: center; align-items: center; }
 
 .contactparagraphs > div { width: fit-content; margin: auto; }
 .contactparagraphs > div > div{ margin: 1em 0; font-size: 1.4rem; }

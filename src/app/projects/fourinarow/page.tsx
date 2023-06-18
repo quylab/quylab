@@ -280,7 +280,7 @@ export default function Page(){
 	const [state, dispatch] = useReducer(reducer, createNewGameState());
 	return (<>
 		<div className="grid-x grid-padding-x grid-container" id="fourinarow">
-			<div className="gametitle-fourinarow">Four In A Row</div>
+			<div className="reactprojecttitle">Four In A Row</div>
 			<div className="gamewrapper">
 				<div className="gameboard-wrapper">
 					<div className="gameboard">
